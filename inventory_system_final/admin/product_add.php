@@ -20,35 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $stock = (int)($_POST['stock_qty'] ?? 0);
   $low = (int)($_POST['low_stock_threshold'] ?? 5);
 
-  $hasUpload = isset($_FILES['image']) && (($_FILES['image']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE);
-  if ($hasUpload) {
-    $err = (int)($_FILES['image']['error'] ?? UPLOAD_ERR_OK);
-    if ($err !== UPLOAD_ERR_OK) {
-      $error = 'Image upload failed. Try a smaller JPG/PNG/WEBP file.';
-    } else {
-      //Max 2 mb image size
-      $maxBytes = 2 * 1024 * 1024; 
-      if (($_FILES['image']['size'] ?? 0) > $maxBytes) {
-        $error = 'Image is too large (max 2MB).';
-      } else {
-        $tmp = $_FILES['image']['tmp_name'] ?? '';
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $mime = $tmp ? ($finfo->file($tmp) ?: '') : '';
-        $allowed = [
-          'image/jpeg' => 'jpg',
-          'image/png'  => 'png',
-          'image/webp' => 'webp',
-        ];
-        if (!isset($allowed[$mime])) {
-          $error = 'Invalid image type. Allowed: JPG, PNG, WEBP.';
-        }
-      }
-    }
-  }
-
   if ($sku === '' || $name === '' || $category_id <= 0 || $supplier_id <= 0) {
     $error = 'SKU, Name, Category, Supplier are required.';
-  } elseif ($error === '') {
+  } else {
     try {
       $stmt = $conn->prepare("
         INSERT INTO products (sku, name, category_id, supplier_id, price, stock_qty, low_stock_threshold)
@@ -56,33 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       ");
       $stmt->bind_param("ssiidii", $sku, $name, $category_id, $supplier_id, $price, $stock, $low);
       $stmt->execute();
-
-      if ($hasUpload) {
-        $pid = (int)$conn->insert_id;
-        $tmp = $_FILES['image']['tmp_name'] ?? '';
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $mime = $tmp ? ($finfo->file($tmp) ?: '') : '';
-        $allowed = [
-          'image/jpeg' => 'jpg',
-          'image/png'  => 'png',
-          'image/webp' => 'webp',
-        ];
-        $ext = $allowed[$mime] ?? null;
-        if ($ext) {
-          $dirFs = __DIR__ . '/../uploads/products';
-          if (!is_dir($dirFs)) { @mkdir($dirFs, 0775, true); }
-
-          $token = bin2hex(random_bytes(8));
-          $filename = 'p' . $pid . '_' . $token . '.' . $ext;
-          $destFs = $dirFs . '/' . $filename;
-          if (move_uploaded_file($tmp, $destFs)) {
-            $rel = 'uploads/products/' . $filename;
-            $u = $conn->prepare("UPDATE products SET image_path=? WHERE id=?");
-            $u->bind_param("si", $rel, $pid);
-            $u->execute();
-          }
-        }
-      }
 
       flash_set('success', 'Product added.');
       header('Location: ' . BASE_URL . '/../admin/products.php');
@@ -103,7 +50,7 @@ include __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <div class="card">
-  <form method="post" class="form" enctype="multipart/form-data">
+  <form method="post" class="form">
     <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
 
     <label>SKU</label>
@@ -136,9 +83,6 @@ include __DIR__ . '/../includes/header.php';
 
     <label>Low Stock Threshold</label>
     <input type="number" step="1" name="low_stock_threshold" value="5" required>
-
-    <label>Product Image <span class="muted">(optional: JPG/PNG/WEBP, max 2MB)</span></label>
-    <input type="file" name="image" accept="image/jpeg,image/png,image/webp">
 
     <button type="submit">Create</button>
   </form>

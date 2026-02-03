@@ -34,18 +34,11 @@ include __DIR__ . '/../includes/header.php';
 
 $isLow = ((int)$p['stock_qty'] <= (int)$p['low_stock_threshold']);
 ?>
+
 <h1>Product View</h1>
 
 <div class="card">
   <div class="product-view">
-    <div class="product-image">
-      <?php if (!empty($p['image_path'])): ?>
-        <img src="<?= BASE_URL ?>/../<?= e($p['image_path']) ?>" alt="Product image">
-      <?php else: ?>
-        <div class="img-placeholder"></div>
-      <?php endif; ?>
-    </div>
-
     <div class="product-info">
       <div class="kv"><span>SKU</span><span><?= e($p['sku']) ?></span></div>
       <div class="kv"><span>Name</span><span><?= e($p['name']) ?></span></div>
@@ -53,10 +46,10 @@ $isLow = ((int)$p['stock_qty'] <= (int)$p['low_stock_threshold']);
       <div class="kv"><span>Supplier</span><span><?= e($p['supplier_name']) ?></span></div>
       <div class="kv"><span>Price</span><span><?= e($p['price']) ?></span></div>
       <div class="kv"><span>Stock</span><span><?= (int)$p['stock_qty'] ?></span></div>
-      <div class="kv"><span>Status</span>
+      <div class="kv">
+        <span>Status</span>
         <span class="badge <?= $isLow ? 'low' : 'ok' ?>"><?= $isLow ? 'LOW' : 'OK' ?></span>
       </div>
-
 
       <?php if (($_SESSION['user']['role'] ?? '') === 'admin'): ?>
         <a class="btn" href="<?= BASE_URL ?>/../admin/product_edit.php?id=<?= (int)$p['id'] ?>">Edit Product</a>
@@ -70,7 +63,13 @@ $isLow = ((int)$p['stock_qty'] <= (int)$p['low_stock_threshold']);
   <div class="table-wrap">
     <table class="table">
       <thead>
-        <tr><th>Date</th><th>User</th><th>Type</th><th>Qty</th><th>Note</th></tr>
+        <tr>
+          <th>Date</th>
+          <th>User</th>
+          <th>Type</th>
+          <th>Qty</th>
+          <th>Note</th>
+        </tr>
       </thead>
       <tbody>
         <?php if (!$movements): ?>

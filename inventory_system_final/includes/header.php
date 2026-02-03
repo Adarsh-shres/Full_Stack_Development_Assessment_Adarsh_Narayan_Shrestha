@@ -12,8 +12,7 @@ if ($user) {
   $res = $conn->query("SELECT COUNT(*) AS c FROM products WHERE is_active=1 AND stock_qty <= low_stock_threshold");
   $lowCount = (int)$res->fetch_assoc()['c'];
 } else {
-
-$cntRes = $conn->query("SELECT COUNT(*) AS c FROM users");
+  $cntRes = $conn->query("SELECT COUNT(*) AS c FROM users");
   $userCount = (int)($cntRes ? $cntRes->fetch_assoc()['c'] : 0);
   $setupOpen = ($userCount === 0);
 }
@@ -25,9 +24,9 @@ $cntRes = $conn->query("SELECT COUNT(*) AS c FROM users");
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e(APP_NAME) ?></title>
   <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
+
   <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
   <link rel="icon" href="<?= BASE_URL ?>/assets/img/favicon.ico">
-
 </head>
 <body>
 <header class="topbar">
@@ -47,7 +46,7 @@ $cntRes = $conn->query("SELECT COUNT(*) AS c FROM users");
           <?php endif; ?>
         </a>
 
-        <?php if ($user['role'] === 'admin'): ?>
+        <?php if (($user['role'] ?? '') === 'admin'): ?>
           <a href="<?= BASE_URL ?>/../admin/products.php">Products</a>
           <a href="<?= BASE_URL ?>/../admin/categories.php">Categories</a>
           <a href="<?= BASE_URL ?>/../admin/suppliers.php">Suppliers</a>

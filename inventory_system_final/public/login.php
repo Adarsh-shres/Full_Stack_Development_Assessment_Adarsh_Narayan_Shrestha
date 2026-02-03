@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 include __DIR__ . '/../includes/header.php';
 ?>
+
 <h1>Login</h1>
 
 <?php if ($error): ?>
@@ -71,4 +72,5 @@ include __DIR__ . '/../includes/header.php';
     <?php endif; ?>
   </form>
 </div>
+
 <?php include __DIR__ . '/../includes/footer.php'; ?>

@@ -16,6 +16,7 @@ $rows = $conn->query($sql)->fetch_all(MYSQLI_ASSOC);
 
 include __DIR__ . '/../includes/header.php';
 ?>
+
 <h1>Products</h1>
 
 <div class="card">
@@ -27,10 +28,18 @@ include __DIR__ . '/../includes/header.php';
     <table class="table">
       <thead>
         <tr>
-          <th>SKU</th><th>Name</th><th>Category</th><th>Supplier</th>
-          <th>Price</th><th>Stock</th><th>Low</th><th>View</th><th>Edit</th>
+          <th>SKU</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Supplier</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Low</th>
+          <th>View</th>
+          <th>Edit</th>
         </tr>
       </thead>
+
       <tbody>
         <?php if (!$rows): ?>
           <tr><td colspan="9" class="muted">No products yet.</td></tr>
@@ -44,8 +53,14 @@ include __DIR__ . '/../includes/header.php';
               <td><?= e($r['price']) ?></td>
               <td><?= (int)$r['stock_qty'] ?></td>
               <td><?= (int)$r['low_stock_threshold'] ?></td>
-              <td><a class="btn btn-secondary" href="<?= BASE_URL ?>/product.php?id=<?= (int)$r['id'] ?>">View</a></td>
-              <td><a class="btn" href="<?= BASE_URL ?>/../admin/product_edit.php?id=<?= (int)$r['id'] ?>">Edit</a></td>
+
+              <td>
+                <a class="btn btn-secondary" href="<?= BASE_URL ?>/product.php?id=<?= (int)$r['id'] ?>">View</a>
+              </td>
+
+              <td>
+                <a class="btn" href="<?= BASE_URL ?>/../admin/product_edit.php?id=<?= (int)$r['id'] ?>">Edit</a>
+              </td>
             </tr>
           <?php endforeach; ?>
         <?php endif; ?>
@@ -53,4 +68,5 @@ include __DIR__ . '/../includes/header.php';
     </table>
   </div>
 </div>
+
 <?php include __DIR__ . '/../includes/footer.php'; ?>
