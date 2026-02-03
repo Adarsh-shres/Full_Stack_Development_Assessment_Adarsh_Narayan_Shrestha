@@ -1,4 +1,4 @@
-</div> <script src="assets/js/script.js"></script>
-
+</main>
+<script src="<?= BASE_URL ?>/assets/js/script.js"></script>
 </body>
 </html>
